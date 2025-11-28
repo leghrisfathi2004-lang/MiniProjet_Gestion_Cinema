@@ -20,10 +20,12 @@ public class Ticket{
     {
         return (int)(Math.random()*1000);
     }
+
     public void effectuerPaiement()
     {
         System.out.println("Paiement effectuer pour le ticket " + this.numero);
     }
+
     public void ajouteTicket(Connection con)
     {
         String sql = "INSERT INTO tickets " +

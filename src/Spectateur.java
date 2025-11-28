@@ -51,6 +51,7 @@ public class Spectateur {
 
         return false;
     }
+
     public boolean findEmail(Connection con, String email) {
 
         String sql = "SELECT * FROM spectateurs  WHERE email = ?";
@@ -69,6 +70,7 @@ public class Spectateur {
 
         return false;
     }
+
     public boolean findNom(Connection con, String nom) {
 
         String sql = "SELECT * FROM spectateurs  WHERE name = ?";

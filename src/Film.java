@@ -7,12 +7,8 @@ public class Film {
     private String titre;
     private int duree;
     private String categorie;
-    static  String URL;
-    static  String USER;
-    static  String PASS;
 
     public Film(String titre, int duree, String categorie) {
-        this.id=id++;
         this.titre = titre;
         this.duree = duree;
         this.categorie = categorie;
@@ -47,17 +43,15 @@ public class Film {
             System.out.println("Erreur about film : " + e.getMessage());
         }
     }
+
     public static void afficherFilms(Connection con) {
-        try   {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM films");
+        try(PreparedStatement ps = con.prepareStatement("SELECT * FROM films"))   {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                System.out.println("ID : " + rs.getInt("id"));
-                System.out.println("Titre : " + rs.getString("titre"));
-                System.out.println("Durée : " + rs.getInt("duree"));
-                System.out.println("Catégorie : " + rs.getString("categorie"));
-                System.out.println("--------------");
+                System.out.println("Film ID : " + rs.getInt("id")+" | titre: "+ rs.getString("titre")+
+                        " | categorie: "+ rs.getString("categorie")+
+                        " | dure: "+ rs.getInt("duree"));
             }
         } catch (Exception e) {
             System.out.println("Erreur affichage : " + e.getMessage());

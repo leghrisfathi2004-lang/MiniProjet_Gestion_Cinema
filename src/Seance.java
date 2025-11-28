@@ -14,7 +14,7 @@ public class Seance {
         this.horaire=horaire;
     }
 
-    public void applyfilm(int film_id, Connection cnnx) {
+    public void applyfilm( Connection cnnx, int film_id) {
         try(PreparedStatement stmt = cnnx.prepareStatement("INSERT INTO seances (capacite, horaire) VALUES (? ,? )")) {
             stmt.setInt(1,capacite);
             stmt.setString(2,horaire);
@@ -48,7 +48,7 @@ public class Seance {
         return 0;
     }
 
-    public void affiche(Connection cnnx) {
+    public static void affiche(Connection cnnx) {
         try(PreparedStatement stmt = cnnx.prepareStatement("SELECT * from seances")){
             ResultSet r = stmt.executeQuery();
             while (r.next())
