@@ -4,16 +4,16 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class Main {
-    static final String URL = "jdbc:mysql://localhost:3306/cinema_db";
+    static final String URL = "jdbc:mysql://127.0.0.1:3306/cinema_db";
     static final String USERNAME = "root";
-    static final String PASSWORD = "mouad2004charadi";
+    static final String PASSWORD = "heart/2016";
 
     public static int menu(){
         Scanner input = new Scanner(System.in);
-        System.out.println("|_________| cinema |_________|" +
-                "| 1 - admine mode            |" +
-                "| 2 - spectateur mode        |" +
-                "| 0 - quitte                 |" +
+        System.out.println("|_________| cinema |_________|\n" +
+                "| 1 - admine mode            |\n" +
+                "| 2 - spectateur mode        |\n" +
+                "| 0 - quitte                 |\n" +
                 "|____________________________|");
         System.out.println("...->");
         int choi = input.nextInt();
@@ -22,11 +22,11 @@ public class Main {
 
     public static int menuAdmine(){
         Scanner input = new Scanner(System.in);
-        System.out.println("|_________| admine |_________|" +
-                "| 1 - ajoute film           |" +
-                "| 2 - ajoute seance         |" +
-                "| 3 - affiche spectateur    |" +
-                "| 0 - quitte                |" +
+        System.out.println("|_________| admine |_________|\n" +
+                "| 1 - ajoute film           |\n" +
+                "| 2 - ajoute seance         |\n" +
+                "| 3 - affiche spectateur    |\n" +
+                "| 0 - quitte                |\n" +
                 "|___________________________|");
         System.out.println("...->");
         int choi = input.nextInt();
@@ -45,21 +45,22 @@ public class Main {
         return new Film(titre, dure, categore);
     }
 
-    public static int findFilm(Connection cnnx,int i){
+    public static boolean findFilm(Connection cnnx,int i) {
         int j = -1;
         try(PreparedStatement ps = cnnx.prepareStatement("SELECT * FROM films where id = ?")){
             ps.setInt(1,i);
             ResultSet rs = ps.executeQuery();
-            j =rs.getInt("id");
+            if (rs.next())
+                j =rs.getInt("id");
         }catch (SQLException e){
             System.out.println("Database error: " + e.getMessage());
         }
         if (j == -1) {
             System.out.println("film Id n exist pas!!");
-            return j;
+            return false;
         }
         System.out.println("Film ID : " + j);
-        return j;
+        return true;
     }
 
     public static Seance ajouteSeance(){
@@ -72,7 +73,7 @@ public class Main {
         return new Seance( capacite, horaire);
     }
 
-    public static boolean findSeance(Connection cnnx,int i){
+    public static boolean findSeance(Connection cnnx,int i) {
         int j = -1;
         try(PreparedStatement ps = cnnx.prepareStatement("SELECT * FROM seances where id = ?")){
             ps.setInt(1,i);
@@ -101,7 +102,7 @@ public class Main {
 
         Spectateur s = new Spectateur(name,email);
 
-        if(s.sauvegarder(cn)) {
+        if(s.ajouteSpectateur(cn)) {
             System.out.println("Accsecc 😊");
             return s.getId();
         }else {
@@ -110,7 +111,7 @@ public class Main {
         }
     }
 
-    public static void afficherAllspectateur(Connection cn){
+    public static void afficherAllspectateur(Connection cn) {
         String sql = "SELECT * FROM spectateurs";
         try(Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql)) {
@@ -127,15 +128,16 @@ public class Main {
         }
     }
 
-    public static void assigneSpect(Connection cnnx){
+    public static void assigneSpect(Connection cnnx) {
         Scanner input = new Scanner(System.in);
         System.out.println("____ les Seances disponible ____");
         Seance.affiche(cnnx);
-        System.out.println("entre Id de seance: ");
-        int choi = input.nextInt();
-        if (findSeance(cnnx,choi)) {
+        int choi = Seance.applyspect(cnnx);
+        if (choi != 0) {
             int id_spct = ajouteSpectateur(cnnx);
             Ticket ticket = new Ticket(id_spct, choi);
+            ticket.ajouteTicket(cnnx);
+            ticket.effectuerPaiement();
             return;
         }
         System.out.println("invalid! try again");
@@ -151,14 +153,13 @@ public class Main {
                 switch (choi){
                     case 1:
                         choiA = menuAdmine();
-                        switch (choiA){
+                        switch (choiA) {
                             case 0:
                                 choi = 0;
                                 break;
                             case 1:
                                 Film film = ajouteFilm();
-                                if (film != null)
-                                    film.ajouterFilm(cnnx);
+                                if (film != null)  film.ajouterFilm(cnnx);
                                 else System.out.println("invalid! try again later");
                                 break;
                             case 2:
@@ -166,8 +167,7 @@ public class Main {
                                 Film.afficherFilms(cnnx);
                                 System.out.println("entre film ID: ");
                                 int i = input.nextInt();
-                                i = findFilm(cnnx,i);
-                                if (i > -1)
+                                if (findFilm(cnnx,i))
                                     seance.applyfilm(cnnx,i);
                                 else System.out.println("invalid! try again later");
                                 break;

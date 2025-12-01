@@ -17,7 +17,7 @@ public class Spectateur {
     }
 
 
-    public boolean sauvegarder(Connection con) {
+    public boolean ajouteSpectateur(Connection con) {
         if(findEmail(con, this.email)) {
             System.out.println("Email est deja existe 🤨");
             return false;

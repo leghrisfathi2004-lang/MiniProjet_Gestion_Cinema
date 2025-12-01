@@ -26,8 +26,7 @@ public class Ticket{
         System.out.println("Paiement effectuer pour le ticket " + this.numero);
     }
 
-    public void ajouteTicket(Connection con)
-    {
+    public void ajouteTicket(Connection con) {
         String sql = "INSERT INTO tickets " +
                      "VALUES (?,?,?,?)";
         try(PreparedStatement pst = con.prepareStatement(sql)) {
@@ -49,6 +48,4 @@ public class Ticket{
             System.err.println("ERROR: " + e.getMessage());
         }
    }
-
-
 }
